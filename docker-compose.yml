@@ -1,0 +1,5 @@
+selenium:
+  image: selenium/standalone-chrome-debug:2.48.2
+  ports:
+    - "5900:5900"
+    - "4444:4444"

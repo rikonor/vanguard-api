@@ -13,7 +13,7 @@ class Vanguard(Base):
 
     def login(self, user, password):
         if self.logged_in is True:
-            console.log("Already logged in")
+            print "Already logged in"
             return
 
         self.go_to_login()
