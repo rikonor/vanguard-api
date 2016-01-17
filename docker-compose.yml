@@ -3,3 +3,10 @@ selenium:
   ports:
     - "5900:5900"
     - "4444:4444"
+
+mongo:
+  image: mongo
+  ports:
+    - "27017:27017"
+  volumes:
+    - vanguard_db:/data/db

@@ -6,4 +6,9 @@ setup(name='api',
       author='Or Rikon',
       author_email='rikonor@gmail.com',
       packages=['api'],
+      install_requires=[
+          'passlib',
+          'bcrypt',
+          'mdict'
+      ],
       zip_safe=False)
