@@ -6,4 +6,8 @@ setup(name='seleniumapis',
       author='Or Rikon',
       author_email='rikonor@gmail.com',
       packages=['vanguard'],
+      install_requires=[
+          'selenium',
+          'nose'
+      ],
       zip_safe=False)

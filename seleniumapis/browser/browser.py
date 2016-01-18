@@ -16,7 +16,6 @@ class Browser(object):
            desired_capabilities=self.browser_type)
 
     def get(self, path):
-        print "trying to get"
         self.driver.get(path)
 
     def close(self):

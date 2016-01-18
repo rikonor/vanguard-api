@@ -6,10 +6,10 @@ import traceback
 
 # Users Routes
 
-@app.route("/register")
+@app.route("/register", methods=['POST'])
 def register():
 	# Register a user profile (user, password)
-	pass
+	return "OK"
 
 @app.route("/register_security_answer")
 def register_security_answer():

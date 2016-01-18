@@ -21,7 +21,7 @@ class TestBrowser(TestCase):
         question = self.v.get_security_question()
 
         answer = config.TEST_SECURITY_QUESTIONS.get(question)
-        assert answer is not None
+        self.assertIsNotNone(answer)
 
         self.v.answer_security_question(answer)
 
@@ -33,7 +33,7 @@ class TestBrowser(TestCase):
         self.v.answer_security_question(answer)
 
         self.v.go_to_balances_and_holdings()
-        assert self.v.browser.title is "Balances and holdings"
+        self.assertEqual(self.v.browser.title, "Balances and holdings")
 
     def test_can_get_total_assets(self):
         self.v.login(config.TEST_USER, config.TEST_PASSWORD)
