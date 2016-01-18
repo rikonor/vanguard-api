@@ -10,3 +10,10 @@ mongo:
     - "27017:27017"
   volumes:
     - vanguard_db:/data/db
+
+api:
+  build: .
+  ports:
+    - "5000:5000"
+  links:
+    - mongo
