@@ -14,7 +14,6 @@ Users collections
         - vanguard
             username
             password
-            password
             security_questions
                 - <question>: <answer>
                 - <question>: <answer>
@@ -78,6 +77,13 @@ class Users(object):
         return Users.users.find_one(dict(user=username))
 
     @staticmethod
+    def clean_user(user):
+        # Remove the _id and password
+        del user['_id']
+        del user['password']
+        return user
+
+    @staticmethod
     def find_user_by_email(email):
         return Users.users.find_one(dict(email=email))
 
@@ -92,8 +98,11 @@ class Users(object):
         if service_name not in Users.allowed_services:
             raise RuntimeError("This service is not supported")
 
-        mset(user, "services:{}".format(service_name), service_info)
+        # Make sure user is not already enrolled
+        if user.get("services", {}).get(service_name) is not None:
+            raise RuntimeError("User is already enrolled in this service")
 
+        mset(user, "services:{}".format(service_name), service_info)
         Users.users.update_one({'_id': user['_id']}, {'$set': {'services': user.get('services')}})
 
     @staticmethod
@@ -108,3 +117,22 @@ class Users(object):
         del_filter = {'$unset': {}}
         del_filter['$unset']['services.{}'.format(service_name)] = 1
         Users.users.update_one({'_id': user['_id']}, del_filter)
+
+    @staticmethod
+    def register_security_answer(username, service_name, question, answer):
+        user = Users.find_user(username)
+        if user is None:
+            raise RuntimeError("User not found")
+
+        if mget(user, "services:{}".format(service_name)) is None:
+            raise RuntimeError("User is not enrolled in service {}".format(service_name))
+
+        set_filter = {'$set': {}}
+        set_filter['$set']['services.{}.security_questions.{}'.format(service_name, question)] = answer
+        Users.users.update_one({'_id': user['_id']}, set_filter)
+
+    @staticmethod
+    def auth_user(username, password):
+        user = Users.find_user(username)
+        p_hash = user.get("password")
+        return Users.verify_password(password, p_hash)

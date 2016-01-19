@@ -19,3 +19,5 @@ api:
     - "5000:5000"
   links:
     - mongo
+  environment:
+    MONGO_URL: mongodb://mongo:27017
