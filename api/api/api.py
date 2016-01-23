@@ -4,8 +4,7 @@ app = Flask(__name__)
 from vanguard import Vanguard, VanguardUser, config
 from users import Users
 from errors import *
-
-import sys
+from responses import *
 
 # Users Routes
 
@@ -43,18 +42,17 @@ def register():
     try:
         params = get_from_request_data(["username", "password", "email"])
     except MissingRequestParams:
-        return "Please provide username, password and email", 400
+        return rMissingParams(["username, password", "email"])
 
     try:
         Users.register_user(username, email, password)
     except RuntimeError as e:
-        print "ERROR:", e
-        return "Internal Server Error", 500
+        return rInternalServerError
 
     try:
         user = auth()
     except AuthenticationFailed:
-        return "Authentication failed", 401
+        return rAuthError
 
     user = Users.clean_user(user)
     return jsonify(user)
@@ -76,7 +74,7 @@ def enroll_in_service():
     try:
         user = auth()
     except AuthenticationFailed:
-        return "Authentication failed", 401
+        return rAuthError
 
     service_info = request_data.get("service_info")
     if service_info is None:
@@ -92,7 +90,7 @@ def enroll_in_service():
         Users.enroll_in_service(username, service_info)
     except RuntimeError as e:
         print "ERROR:", e
-        return "Internal Server Error", 500
+        return rInternalServerError
 
     return "OK"
 
@@ -104,25 +102,24 @@ def register_security_answer():
     try:
         user = auth()
     except AuthenticationFailed:
-        return "Authentication failed", 401
+        return rAuthError
 
     try:
         params = get_from_request_data(["service_info"])
         service_info = params["service_info"]
     except MissingRequestParams:
-        return "Please provide service information for security question registration", 400
+        return rMissingServiceInfo
 
     service_name = service_info.get("service_name")
     question = service_info.get("question")
     answer = service_info.get("answer")
     if None in [service_name, question, answer]:
-        return "Please provide service information for security question registration", 400
+        return rMissingParams(["service_name", "question", "answer"])
 
     try:
         Users.register_security_answer(username, service_name, question, answer)
     except RuntimeError as e:
-        print "ERROR:", e
-        return "Internal Server Error", 500
+        return rInternalServerError
 
     return "OK"
 
@@ -133,14 +130,15 @@ def vanguard_total_assets():
     try:
         user = auth()
     except AuthenticationFailed:
-        return "Authentication failed", 401
+        return rAuthError
 
     # Get username and password
     try:
         vanguard_user = VanguardUser(user)
     except KeyError:
-        return "Not enrolled with Vanguard", 400
+        return rNotEnrolled
 
+    res = None
     try:
         v = Vanguard()
         v.login(vanguard_user.username, vanguard_user.password)
@@ -152,6 +150,8 @@ def vanguard_total_assets():
         res = dict(total=total_assets)
     finally:
         v.close_browser()
+        if res is None:
+            return rInternalServerError
 
     return jsonify(res)
 
