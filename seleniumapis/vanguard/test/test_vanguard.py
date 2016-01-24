@@ -43,3 +43,12 @@ class TestBrowser(TestCase):
         self.v.answer_security_question(answer)
 
         self.v.get_total_assets()
+
+    def test_can_get_current_holdings(self):
+        self.v.login(config.TEST_USER, config.TEST_PASSWORD)
+
+        question = self.v.get_security_question()
+        answer = config.TEST_SECURITY_QUESTIONS.get(question)
+        self.v.answer_security_question(answer)
+
+        self.v.get_current_holdings()

@@ -125,14 +125,13 @@ def register_security_answer():
 
 # Vanguard Routes
 
-@app.route("/total_assets")
+@app.route("/vanguard/total_assets")
 def vanguard_total_assets():
     try:
         user = auth()
     except AuthenticationFailed:
         return rAuthError
 
-    # Get username and password
     try:
         vanguard_user = VanguardUser(user)
     except KeyError:
@@ -154,6 +153,43 @@ def vanguard_total_assets():
             return rInternalServerError
 
     return jsonify(res)
+
+@app.route("/vanguard/current_holdings")
+def vanguard_current_holdings():
+    try:
+        user = auth()
+    except AuthenticationFailed:
+        return rAuthError
+
+    try:
+        vanguard_user = VanguardUser(user)
+    except KeyError:
+        return rNotEnrolled
+
+    res = None
+    try:
+        v = Vanguard()
+        v.login(vanguard_user.username, vanguard_user.password)
+        question = v.get_security_question()
+        answer = vanguard_user.security_questions.get(question)
+        v.answer_security_question(answer)
+
+        current_holdings = v.get_current_holdings()
+        res = dict(current_holdings=current_holdings)
+    finally:
+        v.close_browser()
+        if res is None:
+            return rInternalServerError
+
+    return jsonify(res)
+
+@app.route("/vanguard/open_orders")
+def vanguard_open_orders():
+    raise NotImplementedError
+
+@app.route("/vanguard/available_funds")
+def vanguard_available_funds():
+    raise NotImplementedError
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
