@@ -45,7 +45,7 @@ def register():
         return rMissingParams(["username, password", "email"])
 
     try:
-        Users.register_user(username, email, password)
+        Users.register_user(params["username"],params["email"],params["password"])
     except RuntimeError as e:
         return rInternalServerError
 

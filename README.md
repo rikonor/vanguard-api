@@ -58,13 +58,13 @@ $ curl -X POST --data '{"username":"<username>","password":"<password>","service
 
 ```
 # My Details
-$ curl --date 'username=<username>&password=<password>' http://localhost:5000/my_details
+$ curl --data 'username=<username>&password=<password>' http://localhost:5000/my_details
 
 # Total Assets
-$ curl --date 'username=<username>&password=<password>' http://localhost:5000/vanguard/total_assets
+$ curl --data 'username=<username>&password=<password>' http://localhost:5000/vanguard/total_assets
 
 # Current Holdings
-$ curl --date 'username=<username>&password=<password>' http://localhost:5000/vanguard/current_holdings
+$ curl --data 'username=<username>&password=<password>' http://localhost:5000/vanguard/current_holdings
 ```
 
 Testing
