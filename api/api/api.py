@@ -12,9 +12,10 @@ def get_from_request_data(desired_params):
     """
     Given a list of params, try and get them from the request
     """
+    request_data = request.get_json(force=True)
     params = dict()
     for p in desired_params:
-        p_value = request.form.get(p)
+        p_value = request_data[p]
         if p_value is None:
             raise MissingRequestParams
         params[p] = p_value
@@ -42,7 +43,7 @@ def register():
     try:
         params = get_from_request_data(["username", "password", "email"])
     except MissingRequestParams:
-        return rMissingParams(["username, password", "email"])
+        return rMissingParams(["username", "password", "email"])
 
     try:
         Users.register_user(params["username"],params["email"],params["password"])
@@ -78,13 +79,13 @@ def enroll_in_service():
 
     service_info = request_data.get("service_info")
     if service_info is None:
-        return "Please provide service information for enrollment", 400
+        return "Please provide service information for enrollment\n", 400
 
     service_name = service_info.get("service_name")
     username = service_info.get("username")
     password = service_info.get("password")
     if None in [service_name, username, password]:
-        return "Please provide service information for enrollment", 400
+        return "Please provide service information for enrollment\n", 400
 
     try:
         Users.enroll_in_service(username, service_info)
@@ -92,12 +93,11 @@ def enroll_in_service():
         print "ERROR:", e
         return rInternalServerError
 
-    return "OK"
+    return "OK\n"
 
 @app.route("/register_security_answer", methods=['POST'])
 def register_security_answer():
-    # auth user
-    request_data = request.get_json(force=True)
+    #request_data = request.get_json(force=True)
 
     try:
         user = auth()
@@ -105,10 +105,11 @@ def register_security_answer():
         return rAuthError
 
     try:
-        params = get_from_request_data(["service_info"])
+        params = get_from_request_data(["username","service_info"])
         service_info = params["service_info"]
     except MissingRequestParams:
-        return rMissingServiceInfo
+        #Missing username is handled by auth()
+		return rMissingServiceInfo
 
     service_name = service_info.get("service_name")
     question = service_info.get("question")
@@ -117,11 +118,11 @@ def register_security_answer():
         return rMissingParams(["service_name", "question", "answer"])
 
     try:
-        Users.register_security_answer(username, service_name, question, answer)
+        Users.register_security_answer(params["username"], service_name, question, answer)
     except RuntimeError as e:
         return rInternalServerError
 
-    return "OK"
+    return "OK\n"
 
 # Vanguard Routes
 
