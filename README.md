@@ -51,6 +51,7 @@ $ curl -X POST --data '{"username":"<username>","email":"<email>","password":"<p
 $ curl -X POST --data '{"username":"<username>","password":"<password>","service_info":{"service_name":"vanguard","username":"<username>","password":"<password>"}}' http://localhost:5000/enroll
 
 # Submit Security Q&A
+# NOTE: Omit any apostrophes/single quotes in security questions.
 $ curl -X POST --data '{"username":"<username>","password":"<password>","service_info":{"service_name":"vanguard","question":"<question>","answer":"<answer>"}}' http://localhost:5000/register_security_answer
 ```
 
@@ -58,13 +59,13 @@ $ curl -X POST --data '{"username":"<username>","password":"<password>","service
 
 ```
 # My Details
-$ curl --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/my_details
+$ curl -X GET --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/my_details
 
 # Total Assets
-$ curl --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/vanguard/total_assets
+$ curl -X GET --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/vanguard/total_assets
 
 # Current Holdings
-$ curl --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/vanguard/current_holdings
+$ curl -X GET --data '{"username":"<username>","password":"<password>"}' http://localhost:5000/vanguard/current_holdings
 ```
 
 Testing

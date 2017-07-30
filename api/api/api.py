@@ -109,7 +109,7 @@ def register_security_answer():
         service_info = params["service_info"]
     except MissingRequestParams:
         #Missing username is handled by auth()
-		return rMissingServiceInfo
+        return rMissingServiceInfo
 
     service_name = service_info.get("service_name")
     question = service_info.get("question")
@@ -176,13 +176,12 @@ def vanguard_current_holdings():
         v.answer_security_question(answer)
 
         current_holdings = v.get_current_holdings()
-        res = dict(current_holdings=current_holdings)
     finally:
         v.close_browser()
-        if res is None:
+        if len(current_holdings) == 0:
             return rInternalServerError
 
-    return jsonify(res)
+    return jsonify(current_holdings)
 
 @app.route("/vanguard/open_orders")
 def vanguard_open_orders():

@@ -1,23 +1,36 @@
-selenium:
-  image: selenium/standalone-chrome-debug:2.48.2
-  ports:
-    - "5900:5900"
-    - "4444:4444"
+version: "3"
 
-mongo:
-  image: mongo
-  ports:
-    - "27017:27017"
-  volumes:
-    - vanguard_db:/data/db
+services:
+  selenium:
+    image: selenium/standalone-chrome-debug:2.48.2
+    ports:
+      - "5900:5900"
+      - "4444:4444"
+    networks:
+      - default
 
-api:
-  build: .
-  volumes:
-    - .:/src
-  ports:
-    - "5000:5000"
-  links:
-    - mongo
-  environment:
-    MONGO_URL: mongodb://mongo:27017
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - default
+    volumes:
+      - vanguard_db:/data/db
+
+  api:
+    build: .
+    volumes:
+      - .:/src
+    ports:
+      - "5000:5000"
+    networks:
+      - default
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+
+volumes:
+  vanguard_db:
+
+networks:
+  default:

@@ -5,7 +5,7 @@ from selenium.common.exceptions import *
 
 class Browser(object):
     def __init__(self):
-        self.remote = "http://192.168.99.100:4444/wd/hub"
+        self.remote =  "http://selenium:4444/wd/hub"
         self.browser_type = DesiredCapabilities.CHROME
 
         self.browser = None
@@ -61,6 +61,12 @@ class Browser(object):
     def find_element_by_xpath(self, xpath):
         try:
             return self.driver.find_element_by_xpath(xpath)
+        except NoSuchElementException:
+            return None
+
+    def find_elements_by_xpath(self, xpath):
+        try:
+            return self.driver.find_elements_by_xpath(xpath)
         except NoSuchElementException:
             return None
 
