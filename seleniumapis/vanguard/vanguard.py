@@ -3,6 +3,7 @@ import config
 
 from base import Base
 from browser import Converters
+from browser.converters import TextType
 
 class Vanguard(Base):
     def ensure_logged_in(self):
@@ -87,12 +88,21 @@ class Vanguard(Base):
 
         holdings_tables = self.browser.find_elements_by_xpath("//table[starts-with(@id,'BHForm2:accountID:')]")
         accounts = {}
-        account_num = 0 
+        account_num = 0
+
+        data_headers = []
+        data_headers.append( ("symbol",TextType.plain) )      
+        data_headers.append( ("name",TextType.plain) )
+        data_headers.append( ("expense_ratio",TextType.percent) )
+        data_headers.append( ("quantity",TextType.plain) )
+        data_headers.append( ("last_price",TextType.dollar) )
+        data_headers.append( ("change_amount",TextType.dollar) )
+        data_headers.append( ("change_percent",TextType.percent) )
+        data_headers.append( ("current_balance",TextType.dollar) ) 
+     
         for holdings_table in holdings_tables:
             if  len( holdings_table.find_elements_by_tag_name("th") ) == 0:
                 continue
-            else:
-                data_names = ["symbol","name","expense_ratio","quantity","last_price","change_amount","change_percent","current_balance"]
 
             rows = holdings_table.find_elements_by_tag_name("tr")
 
@@ -113,9 +123,10 @@ class Vanguard(Base):
                     continue
  
                 for el_num in xrange( len(els) ):
-                    if el_num >= len( data_names ):
+                    if el_num >= len( data_headers ):
                         continue
-                    holding_info[ data_names[el_num] ] = self._cleanText( els[el_num].text ).strip()
+                    headerName,textType = data_headers[el_num]
+                    holding_info[ headerName ] = Converters.convert( els[el_num].text , textType )
 
                 holdings_info.append(holding_info)
             account_num += 1

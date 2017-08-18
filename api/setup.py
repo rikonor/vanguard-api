@@ -12,6 +12,7 @@ setup(name='api',
           'bcrypt',
           'mdict',
           'pymongo',
-          'nose'
+          'nose',
+          'enum34'
       ],
       zip_safe=False)
