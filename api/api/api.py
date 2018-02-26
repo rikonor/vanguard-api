@@ -88,7 +88,7 @@ def enroll_in_service():
         return "Please provide service information for enrollment\n", 400
 
     try:
-        Users.enroll_in_service(username, service_info)
+        Users.enroll_in_service(user['user'], service_info)
     except RuntimeError as e:
         print "ERROR:", e
         return rInternalServerError
@@ -118,7 +118,7 @@ def register_security_answer():
         return rMissingParams(["service_name", "question", "answer"])
 
     try:
-        Users.register_security_answer(params["username"], service_name, question, answer)
+        Users.register_security_answer(user['user'], service_name, question, answer)
     except RuntimeError as e:
         return rInternalServerError
 
