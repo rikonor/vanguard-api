@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from enum import Enum
 
 class ValueConversionFailure(Exception):
@@ -37,7 +40,7 @@ class Converters(object):
                     new_text += "-"
                 else:
                     new_text += ""
-        
+
         return new_text
 
     @staticmethod
@@ -46,7 +49,7 @@ class Converters(object):
         val = Converters.sanitize_unicode_signs(v,"number")
 
         if val == "":
-            return None       
+            return None
         elif "%" not in val:
             raise ValueConversionFailure("No percent symbol found: {}".format(val))
         elif val[-1] != "%":
@@ -63,6 +66,11 @@ class Converters(object):
 
     @staticmethod
     def dollar_amount(v):
+
+        # When dollar amount is not available, a `-` is shown
+        if u'—' == v:
+            return 0.0
+
         # Sanitize input (spaces, commas and dollar symbol)
         val = Converters.sanitize_unicode_signs(v,"number")
 
@@ -72,7 +80,7 @@ class Converters(object):
             raise ValueConversionFailure("Failed dollar amount conversion: {}".format(val))
 
         return dollar_amount
-    
+
     @staticmethod
     def plain(v):
         val = Converters.sanitize_unicode_signs(v)

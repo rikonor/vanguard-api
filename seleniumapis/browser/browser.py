@@ -1,7 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 from selenium.common.exceptions import *
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class Browser(object):
     def __init__(self):
@@ -57,6 +59,9 @@ class Browser(object):
             return self.driver.find_element_by_class_name(eclass)
         except NoSuchElementException:
             return None
+
+    def wait_until_visible(self, xpath):
+        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
     def find_element_by_xpath(self, xpath):
         try:
